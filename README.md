@@ -6,7 +6,10 @@
 - [Microsoft Graph documentation | Microsoft Docs](https://docs.microsoft.com/en-us/graph/)
   + [Overview of Microsoft Graph - Microsoft Graph | Microsoft Docs](https://docs.microsoft.com/en-us/graph/overview)
   + [Choose a Microsoft Graph authentication provider - Microsoft Graph | Microsoft Docs](https://docs.microsoft.com/en-us/graph/sdks/choose-authentication-providers?tabs=CS)
-  + [Exercise - Access a user's calendar events by using Microsoft Graph - Learn | Microsoft Docs](https://docs.microsoft.com/en-us/learn/modules/msgraph-dotnet-core-access-user-events/6-exercise-configure-app-access-events)
+
+## Calendars
+- [Create Event - Microsoft Graph v1.0 | Microsoft Docs](https://docs.microsoft.com/en-us/graph/api/user-post-events?view=graph-rest-1.0&tabs=http)
+- [Exercise - Access a user's calendar events by using Microsoft Graph - Learn | Microsoft Docs](https://docs.microsoft.com/en-us/learn/modules/msgraph-dotnet-core-access-user-events/6-exercise-configure-app-access-events)
 
 ## Online Meetings
 - [Create onlineMeeting - Microsoft Graph v1.0 | Microsoft Docs](https://docs.microsoft.com/en-us/graph/api/application-post-onlinemeetings?view=graph-rest-1.0&tabs=http)
@@ -16,5 +19,3 @@
 - [Limits and specifications for Microsoft Teams - Microsoft Teams | Microsoft Docs](https://docs.microsoft.com/en-us/microsoftteams/limits-specifications-teams#meeting-expiration)
 
 ## Bookings
-
-## Calendars
