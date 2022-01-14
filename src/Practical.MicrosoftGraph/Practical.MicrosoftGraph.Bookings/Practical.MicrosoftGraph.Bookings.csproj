@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<UserSecretsId>473ed7c3-3710-46ab-a7f1-816a98fe18c6</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Program.cs~RF78585f5.TMP" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.3.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Graph" Version="4.14.0" />
+	</ItemGroup>
+
+</Project>
