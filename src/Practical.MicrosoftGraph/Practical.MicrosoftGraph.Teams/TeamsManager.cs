@@ -29,19 +29,38 @@ public class TeamsManager
         return team;
     }
 
-    public async Task<Team?> CreateTeamAsync(string displayName, string description)
+    public async Task<Team?> CreateTeamAsync(string displayName, string description, string ownerUserId)
     {
         var team = new Team
         {
             DisplayName = displayName,
-            Description = description
+            Description = description,
+            Visibility = TeamVisibilityType.Private,
+            AdditionalData = new Dictionary<string, object>
+            {
+                {
+                    "template@odata.bind",
+                    "https://graph.microsoft.com/v1.0/teamsTemplates('standard')"
+                }
+            },
+            Members = new List<ConversationMember>
+            {
+                new AadUserConversationMember
+                {
+                    Roles = new List<string>{ "owner" },
+                    AdditionalData = new Dictionary<string, object>
+                    {
+                        {"user@odata.bind", $"https://graph.microsoft.com/v1.0/users/{ownerUserId}"}
+                    }
+                }
+            }
         };
 
         var result = await _graphClient.Teams.PostAsync(team);
         return result;
     }
 
-    public async Task<bool> UpdateTeamAsync(string teamId, string displayName, string description)
+    public async Task UpdateTeamAsync(string teamId, string displayName, string description)
     {
         var team = new Team
         {
@@ -50,22 +69,14 @@ public class TeamsManager
         };
 
         await _graphClient.Teams[teamId].PatchAsync(team);
-        return true;
     }
 
-    public async Task<bool> DeleteTeamAsync(string teamId)
+    public async Task DeleteTeamAsync(string teamId)
     {
-        await _graphClient.Teams[teamId].DeleteAsync();
-        return true;
+        await _graphClient.Groups[teamId].DeleteAsync();
     }
 
-    public async Task<List<DirectoryObject>> ListTeamOwnersAsync(string teamId)
-    {
-        var owners = await _graphClient.Groups[teamId].Owners.GetAsync();
-        return owners?.Value?.ToList() ?? new List<DirectoryObject>();
-    }
-
-    public async Task<bool> AddTeamOwnerAsync(string teamId, string userId)
+    public async Task AddTeamOwnerAsync(string teamId, string userId)
     {
         var referenceBody = new ReferenceCreate
         {
@@ -73,13 +84,11 @@ public class TeamsManager
         };
 
         await _graphClient.Groups[teamId].Owners.Ref.PostAsync(referenceBody);
-        return true;
     }
 
-    public async Task<bool> RemoveTeamOwnerAsync(string teamId, string userId)
+    public async Task RemoveTeamOwnerAsync(string teamId, string userId)
     {
         await _graphClient.Groups[teamId].Owners[userId].Ref.DeleteAsync();
-        return true;
     }
 
     public async Task<List<ConversationMember>> ListTeamMembersAsync(string teamId)
@@ -88,7 +97,7 @@ public class TeamsManager
         return members?.Value?.ToList() ?? new List<ConversationMember>();
     }
 
-    public async Task<bool> AddTeamMemberAsync(string teamId, string userId, string roles = "member")
+    public async Task AddTeamMemberAsync(string teamId, string userId, string roles = "member")
     {
         var conversationMember = new AadUserConversationMember
         {
@@ -98,16 +107,14 @@ public class TeamsManager
         };
 
         await _graphClient.Teams[teamId].Members.PostAsync(conversationMember);
-        return true;
     }
 
-    public async Task<bool> RemoveTeamMemberAsync(string teamId, string memberId)
+    public async Task RemoveTeamMemberAsync(string teamId, string memberId)
     {
         await _graphClient.Teams[teamId].Members[memberId].DeleteAsync();
-        return true;
     }
 
-    public async Task<bool> UpdateTeamMemberAsync(string teamId, string memberId, List<string> roles)
+    public async Task UpdateTeamMemberAsync(string teamId, string memberId, List<string> roles)
     {
         var conversationMember = new AadUserConversationMember
         {
@@ -115,30 +122,6 @@ public class TeamsManager
         };
 
         await _graphClient.Teams[teamId].Members[memberId].PatchAsync(conversationMember);
-        return true;
-    }
-
-    public async Task<List<(string Id, string DisplayName, List<string> Roles)>> ListTeamMembersWithRolesAsync(string teamId)
-    {
-        var members = await _graphClient.Teams[teamId].Members.GetAsync();
-        var memberList = new List<(string Id, string DisplayName, List<string> Roles)>();
-
-        if (members?.Value != null)
-        {
-            foreach (var member in members.Value)
-            {
-                if (member is AadUserConversationMember aadMember)
-                {
-                    memberList.Add((
-                        Id: aadMember.Id,
-                        DisplayName: aadMember.DisplayName ?? "Unknown",
-                        Roles: aadMember.Roles?.ToList() ?? new List<string>()
-                    ));
-                }
-            }
-        }
-
-        return memberList;
     }
 
     public async Task<List<Channel>> ListChannelsAsync(string teamId)
@@ -166,7 +149,7 @@ public class TeamsManager
         return result;
     }
 
-    public async Task<bool> UpdateChannelAsync(string teamId, string channelId, string displayName, string description)
+    public async Task UpdateChannelAsync(string teamId, string channelId, string displayName, string description)
     {
         var channel = new Channel
         {
@@ -175,24 +158,24 @@ public class TeamsManager
         };
 
         await _graphClient.Teams[teamId].Channels[channelId].PatchAsync(channel);
-        return true;
     }
 
-    public async Task<bool> DeleteChannelAsync(string teamId, string channelId)
+    public async Task DeleteChannelAsync(string teamId, string channelId)
     {
         await _graphClient.Teams[teamId].Channels[channelId].DeleteAsync();
-        return true;
     }
 
     public async Task<List<DriveItem>> ListChannelFilesAsync(string teamId, string channelId)
     {
-        var files = await _graphClient.Teams[teamId].Channels[channelId].FilesFolder.GetAsync();
-        return files?.Children?.ToList() ?? new List<DriveItem>();
+        var folder = await _graphClient.Teams[teamId].Channels[channelId].FilesFolder.GetAsync();
+        var files = await _graphClient.Drives[folder.ParentReference.DriveId].Items[folder.Id].Children.GetAsync();
+        return files.Value;
     }
 
-    public async Task<DriveItem?> GetChannelFileAsync(string teamId, string channelId, string fileId)
+    public async Task<DriveItem?> GetChannelFileAsync(string teamId, string channelId, string fileName)
     {
-        var file = await _graphClient.Drives[teamId].Items[fileId].GetAsync();
+        var folder = await _graphClient.Teams[teamId].Channels[channelId].FilesFolder.GetAsync();
+        var file = await _graphClient.Drives[folder.ParentReference.DriveId].Items[folder.Id].Children[fileName].GetAsync();
         return file;
     }
 
@@ -207,22 +190,14 @@ public class TeamsManager
         var driveId = filesFolder.ParentReference.DriveId;
         var folderId = filesFolder.Id;
 
-        var file = await _graphClient.Drives[driveId].Items[folderId].Children
-            .PostAsync(new DriveItem
-            {
-                Name = fileName
-            });
+        // Upload file directly with content using the Put method
+        var uploadedFile = await _graphClient.Drives[driveId].Items[folderId].Children[fileName].Content
+            .PutAsync(fileContent);
 
-        if (file != null)
-        {
-            await _graphClient.Drives[driveId].Items[file.Id].Content
-                .PutAsync(fileContent);
-        }
-
-        return file;
+        return uploadedFile;
     }
 
-    public async Task<bool> UpdateChannelFileAsync(string teamId, string channelId, string fileId, Stream fileContent)
+    public async Task UpdateChannelFileAsync(string teamId, string channelId, string fileId, Stream fileContent)
     {
         var filesFolder = await _graphClient.Teams[teamId].Channels[channelId].FilesFolder.GetAsync();
         if (filesFolder?.ParentReference?.DriveId == null)
@@ -233,10 +208,9 @@ public class TeamsManager
         var driveId = filesFolder.ParentReference.DriveId;
         await _graphClient.Drives[driveId].Items[fileId].Content
             .PutAsync(fileContent);
-        return true;
     }
 
-    public async Task<bool> DeleteChannelFileAsync(string teamId, string channelId, string fileId)
+    public async Task DeleteChannelFileAsync(string teamId, string channelId, string fileId)
     {
         var filesFolder = await _graphClient.Teams[teamId].Channels[channelId].FilesFolder.GetAsync();
         if (filesFolder?.ParentReference?.DriveId == null)
@@ -246,6 +220,5 @@ public class TeamsManager
 
         var driveId = filesFolder.ParentReference.DriveId;
         await _graphClient.Drives[driveId].Items[fileId].DeleteAsync();
-        return true;
     }
 }
