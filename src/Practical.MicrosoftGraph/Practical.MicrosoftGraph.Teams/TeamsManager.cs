@@ -29,6 +29,20 @@ public class TeamsManager
         return team;
     }
 
+    public async Task<Team> GetTeamByNameAsync(string teamName)
+    {
+        var teams = await _graphClient.Teams.GetAsync(config => config.QueryParameters.Filter = $"displayName eq '{teamName}'");
+
+        return teams?.Value?.SingleOrDefault();
+    }
+
+    public async Task<List<Team>> GetTeamsByNameAsync(string teamName)
+    {
+        var teams = await _graphClient.Teams.GetAsync(config => config.QueryParameters.Filter = $"displayName eq '{teamName}'");
+
+        return teams?.Value?.ToList() ?? new List<Team>();
+    }
+
     public async Task<Team?> CreateTeamAsync(string displayName, string description, string ownerUserId)
     {
         var team = new Team
