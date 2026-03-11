@@ -101,7 +101,7 @@ if (newChannel != null)
 
     // Update channel
     Console.WriteLine("\nUpdating channel...");
-    await teamsManager.UpdateChannelAsync(myTeam.Id, channelId, "My New Channel Updated at " + DateTime.UtcNow.Ticks, "Updated description");
+    await teamsManager.UpdateChannelAsync(myTeam.Id, channelId, "My New Channel Updated at " + DateTime.Now.ToString("yyyyMMdd_HHmmss"), "Updated description");
     Console.WriteLine("Channel updated successfully");
 
     // Channel Files Management
@@ -158,7 +158,7 @@ if (newChannel != null)
 
 // Update team
 Console.WriteLine("\nUpdating team...");
-await teamsManager.UpdateTeamAsync(myTeam.Id, "My New Team Updated at " + DateTime.UtcNow.Ticks, "Updated team description");
+await teamsManager.UpdateTeamAsync(myTeam.Id, "My New Team Updated at " + DateTime.Now.ToString("yyyyMMdd_HHmmss"), "Updated team description");
 Console.WriteLine("Team updated successfully");
 
 // Delete team

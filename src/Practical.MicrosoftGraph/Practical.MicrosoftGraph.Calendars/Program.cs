@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using Practical.MicrosoftGraph.Calendars;
 using System;
 using System.Collections.Generic;
 
@@ -36,26 +37,36 @@ var clientSecretCredential = new ClientSecretCredential(
 
 var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
-var userId = config["Calendars:UserId"];
 var userName = config["Calendars:UserName"];
-var domain = config["Domain"];
 var attendee1 = config["Calendars:Attendee1"];
 var attendee2 = config["Calendars:Attendee2"];
 var attendee3 = config["Calendars:Attendee3"];
 
-//var users = await graphClient.Users.Request().GetAsync();
+var userManager = new UserManager(graphClient);
 
-var @event = await graphClient.Users[userName].Events.PostAsync(new Event
+//var users = await userManager.GetUsersAsync();
+//foreach (var user in users)
+//{
+//    Console.WriteLine($"User: {user.DisplayName} ({user.Id}) ({user.Mail}) ({user.UserPrincipalName})");
+//}
+
+//var myUser = await userManager.GetUserAsync(userName);
+
+var events = await userManager.GetEventsAsync(userName);
+
+var start = new DateTimeTimeZone
 {
-    Subject = "Book an Appointment Demo",
-    Body = new ItemBody
-    {
-        ContentType = BodyType.Html,
-        Content = "Does noon work for you?"
-    },
-    IsDraft = false,
-    IsOnlineMeeting = true,
-    Attendees = new List<Attendee>
+    DateTime = DateTime.Now.ToString("o"),
+    TimeZone = "Eastern Standard Time"   // Windows timezone name
+};
+
+var end = new DateTimeTimeZone
+{
+    DateTime = DateTime.Now.AddHours(1).ToString("o"),
+    TimeZone = "Eastern Standard Time"
+};
+
+var @event = await userManager.CreateEventAsync(userName, "Book an Appointment Demo " + DateTime.Now.ToString("yyyyMMdd_HHmmss"), "Does noon work for you?", start, end, new List<Attendee>
                 {
                     new Attendee
                     {
@@ -72,25 +83,25 @@ var @event = await graphClient.Users[userName].Events.PostAsync(new Event
                         EmailAddress = new EmailAddress {Address = attendee3 },
                         Type = AttendeeType.Optional,
                     },
-                },
-});
+                }, isOnlineMeeting: true);
 
-await graphClient.Users[userName].Events[@event.Id].DeleteAsync();
+//events = await userManager.GetEventsAsync(userName);
 
-var onlineMeetings = await graphClient.Users[userId].OnlineMeetings.PostAsync(new OnlineMeeting
-{
-    Subject = "Book an Appointment Demo"
-});
+//await userManager.DeleteEventAsync(userName, @event.Id);
 
-var allEvents = await graphClient.Users[userName].Events.GetAsync();
+//events = await userManager.GetEventsAsync(userName);
 
-var startOfWeek = DateTime.Now;
+//var onlineMeetings = await graphClient.Users[userId].OnlineMeetings.PostAsync(new OnlineMeeting
+//{
+//    Subject = "Book an Appointment Demo"
+//});
+
+var startOfWeek = DateTime.Now.AddDays(-1);
 var endOfWeek = startOfWeek.AddDays(7);
 
-var events = await graphClient.Users[userName].CalendarView.GetAsync((requestConfiguration) =>
+var searchEvents = await userManager.SearchEventsAsync(userName, startOfWeek, endOfWeek);
+
+foreach (var searchEvent in searchEvents)
 {
-    requestConfiguration.QueryParameters.StartDateTime = startOfWeek.ToString("o");
-    requestConfiguration.QueryParameters.EndDateTime = endOfWeek.ToString("o");
-    requestConfiguration.QueryParameters.Select = new[] { "subject", "organizer", "start", "end" };
-    requestConfiguration.QueryParameters.Orderby = new[] { "start/DateTime" };
-});
+    Console.WriteLine($"Event: {searchEvent.Subject} ({searchEvent.Start.DateTime} - {searchEvent.End.DateTime})");
+}
