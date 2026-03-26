@@ -235,4 +235,16 @@ public class TeamsManager
         var driveId = filesFolder.ParentReference.DriveId;
         await _graphClient.Drives[driveId].Items[fileId].DeleteAsync();
     }
+
+    public async Task<Site> GetSiteAsync(string tenentName, string siteName)
+    {
+        var site = await _graphClient.Sites[$"{tenentName}.sharepoint.com:/sites/{siteName}"].GetAsync();
+        return site;
+    }
+
+    public async Task<Site> GetSiteAsync(string siteId)
+    {
+        var site = await _graphClient.Sites[siteId].GetAsync();
+        return site;
+    }
 }
