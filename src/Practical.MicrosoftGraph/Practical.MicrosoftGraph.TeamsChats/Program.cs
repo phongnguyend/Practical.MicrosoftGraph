@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Practical.MicrosoftGraph.TeamsChats;
 using System;
+using System.Linq;
 
 // Load configuration from user secrets
 var configuration = new ConfigurationBuilder()
@@ -20,8 +21,8 @@ var graphClient = new GraphServiceClient(credential, ["https://graph.microsoft.c
 var teamsChatsManager = new TeamsChatsManager(graphClient);
 
 var team = await teamsChatsManager.GetTeamByNameAsync("Test");
-
 var channels = await teamsChatsManager.ListChannelsAsync(team.Id);
+var channel = channels.FirstOrDefault();
 
 
 // Example usage:
@@ -36,6 +37,15 @@ var channels = await teamsChatsManager.ListChannelsAsync(team.Id);
 var chat = await teamsChatsManager.GetChatAsync("19:fd72923a5f234b8fb6514661a4211a6d@thread.v2");
 
 var messages = await teamsChatsManager.ListChatMessagesAsync(chat.Id);
+
+foreach (var message in messages)
+{
+    var sender = message.From?.User?.DisplayName ?? "Unknown";
+    var sentTime = message.CreatedDateTime?.ToString("g") ?? "Unknown";
+    Console.WriteLine($"[{sentTime}] [MessageType: {message.MessageType}] [Sender: {sender}]: {message.Body.Content}");
+}
+
+messages = await teamsChatsManager.ListChannelMessagesAsync(team.Id, channel.Id);
 
 foreach (var message in messages)
 {

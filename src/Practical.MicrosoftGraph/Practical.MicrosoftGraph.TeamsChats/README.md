@@ -1,8 +1,10 @@
 ### Permissions:
 | API / Permissions name                 | Type        | Description                                                          |
 |----------------------------------------|-------------|----------------------------------------------------------------------|
-| Chat.Create                            | Application | Create chats and add members                                          |
-| Chat.ReadWrite                         | Application | Read and write to user's chats                                        |
+| Channel.ReadBasic.All                  | Application | Read the names and descriptions of all channels                      |
+| ChannelMessage.Read.All                | Application | Read all channel messages                                            |
+| Chat.Create                            | Application | Create chats and add members                                         |
+| Chat.ReadWrite                         | Application | Read and write to user's chats                                       |
 | Chat.ReadWrite.All                     | Application | Read and write all chats                                             |
 | ChatMessage.Send                       | Application | Send chat messages                                                   |
 | User.ReadBasic.All                     | Application | Read all users' basic profiles                                       |
