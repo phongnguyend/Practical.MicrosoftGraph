@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Practical.MicrosoftGraph.Calendars", "Practical.MicrosoftGraph.Calendars\Practical.MicrosoftGraph.Calendars.csproj", "{C851F937-203C-4C36-8D3C-064E10FED3D8}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.OnlineMeetings", "Practical.MicrosoftGraph.OnlineMeetings\Practical.MicrosoftGraph.OnlineMeetings.csproj", "{FFEF8265-9073-45B7-BA81-E1A144862E29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.Teams", "Practical.MicrosoftGraph.Teams\Practical.MicrosoftGraph.Teams.csproj", "{2F2DC722-DCE7-4D17-8874-249CBE15A08A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.TeamsChats", "Practical.MicrosoftGraph.TeamsChats\Practical.MicrosoftGraph.TeamsChats.csproj", "{09D15E79-BE53-4C53-8921-164C4BFFE6DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{2F2DC722-DCE7-4D17-8874-249CBE15A08A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F2DC722-DCE7-4D17-8874-249CBE15A08A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F2DC722-DCE7-4D17-8874-249CBE15A08A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
