@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.TeamsChats", "Practical.MicrosoftGraph.TeamsChats\Practical.MicrosoftGraph.TeamsChats.csproj", "{09D15E79-BE53-4C53-8921-164C4BFFE6DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practical.MicrosoftGraph.Mails", "Practical.MicrosoftGraph.Mails\Practical.MicrosoftGraph.Mails.csproj", "{FBE16095-E566-411B-B08C-3968814EAD13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09D15E79-BE53-4C53-8921-164C4BFFE6DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE16095-E566-411B-B08C-3968814EAD13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE16095-E566-411B-B08C-3968814EAD13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE16095-E566-411B-B08C-3968814EAD13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE16095-E566-411B-B08C-3968814EAD13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
