@@ -160,4 +160,49 @@ public class TeamsChatsManager
         var message = await _graphClient.Teams[teamId].Channels[channelId].Messages[messageId].GetAsync();
         return message;
     }
+
+    /// <summary>
+    /// Generates a URL to jump to a specific chat in Microsoft Teams.
+    /// </summary>
+    /// <param name="chatId">The ID of the chat</param>
+    /// <returns>The Teams deep link URL</returns>
+    public string GetChatUrl(string chatId)
+    {
+        return $"https://teams.microsoft.com/l/chat/{Uri.EscapeDataString(chatId)}/0";
+    }
+
+    /// <summary>
+    /// Generates a URL to jump to a specific message in a chat.
+    /// </summary>
+    /// <param name="chatId">The ID of the chat</param>
+    /// <param name="messageId">The ID of the message</param>
+    /// <returns>The Teams deep link URL</returns>
+    public string GetChatMessageUrl(string chatId, string messageId)
+    {
+        var context = Uri.EscapeDataString(@"{""contextType"":""chat""}");
+        return $"https://teams.microsoft.com/l/message/{Uri.EscapeDataString(chatId)}/{Uri.EscapeDataString(messageId)}?context={context}";
+    }
+
+    /// <summary>
+    /// Generates a URL to jump to a specific channel in Microsoft Teams.
+    /// </summary>
+    /// <param name="teamId">The ID of the team</param>
+    /// <param name="channelId">The ID of the channel</param>
+    /// <returns>The Teams deep link URL</returns>
+    public string GetChannelUrl(string teamId, string channelId)
+    {
+        return $"https://teams.microsoft.com/l/channel/{Uri.EscapeDataString(channelId)}/General?groupId={Uri.EscapeDataString(teamId)}";
+    }
+
+    /// <summary>
+    /// Generates a URL to jump to a specific message in a channel.
+    /// </summary>
+    /// <param name="teamId">The ID of the team</param>
+    /// <param name="channelId">The ID of the channel</param>
+    /// <param name="messageId">The ID of the message</param>
+    /// <returns>The Teams deep link URL</returns>
+    public string GetChannelMessageUrl(string teamId, string channelId, string messageId)
+    {
+        return $"https://teams.microsoft.com/l/message/{Uri.EscapeDataString(channelId)}/{Uri.EscapeDataString(messageId)}?groupId={Uri.EscapeDataString(teamId)}";
+    }
 }

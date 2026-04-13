@@ -23,7 +23,8 @@ var teamsChatsManager = new TeamsChatsManager(graphClient);
 var team = await teamsChatsManager.GetTeamByNameAsync("Test");
 var channels = await teamsChatsManager.ListChannelsAsync(team.Id);
 var channel = channels.FirstOrDefault();
-
+var channelUrl = teamsChatsManager.GetChannelUrl(team.Id, channel.Id);
+Console.WriteLine($"Channel URL: {channelUrl}");
 
 // Example usage:
 
@@ -35,6 +36,8 @@ var channel = channels.FirstOrDefault();
 // chatId: 19:fd72923a5f234b8fb6514661a4211a6d@thread.v2
 
 var chat = await teamsChatsManager.GetChatAsync("19:fd72923a5f234b8fb6514661a4211a6d@thread.v2");
+var chatUrl = teamsChatsManager.GetChatUrl(chat.Id);
+Console.WriteLine($"\nChat URL: {chatUrl}");
 
 var messages = await teamsChatsManager.ListChatMessagesAsync(chat.Id);
 
@@ -42,6 +45,7 @@ foreach (var message in messages)
 {
     var sender = message.From?.User?.DisplayName ?? "Unknown";
     var sentTime = message.CreatedDateTime?.ToString("g") ?? "Unknown";
+    var messageUrl = teamsChatsManager.GetChatMessageUrl(chat.Id, message.Id);
     Console.WriteLine($"[{sentTime}] [MessageType: {message.MessageType}] [Sender: {sender}]: {message.Body.Content}");
 }
 
@@ -51,6 +55,7 @@ foreach (var message in messages)
 {
     var sender = message.From?.User?.DisplayName ?? "Unknown";
     var sentTime = message.CreatedDateTime?.ToString("g") ?? "Unknown";
+    var messageUrl = teamsChatsManager.GetChannelMessageUrl(team.Id, channel.Id, message.Id);
     Console.WriteLine($"[{sentTime}] [MessageType: {message.MessageType}] [Sender: {sender}]: {message.Body.Content}");
 }
 
