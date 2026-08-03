@@ -148,6 +148,64 @@ public class SharePointOnlineClient
         return permissions.Value;
     }
 
+    public async Task<Subscription> CreateWebhookAsync(string notificationUrl, DateTimeOffset expirationDateTime, string clientState = null, CancellationToken cancellationToken = default)
+    {
+        var drive = await GetDocumentLibraryAsync(cancellationToken);
+
+        var subscription = new Subscription
+        {
+            ChangeType = "updated",
+            NotificationUrl = notificationUrl,
+            Resource = $"/drives/{drive.Id}/root",
+            ExpirationDateTime = expirationDateTime,
+            ClientState = clientState,
+        };
+
+        return await _client.Subscriptions
+            .PostAsync(subscription, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Retrieves the changes that occurred in the document library since the last delta call.
+    /// Microsoft Graph will not send further change notifications for a drive resource until
+    /// this delta query has been called after a notification is received.
+    /// Pass null to start a fresh delta from the current state, or pass the deltaLink returned
+    /// from a previous call to continue from where you left off.
+    /// </summary>
+    public async Task<(System.Collections.Generic.List<DriveItem> Items, string DeltaLink)> GetDeltaAsync(string deltaLink = null, CancellationToken cancellationToken = default)
+    {
+        var drive = await GetDocumentLibraryAsync(cancellationToken);
+
+        var items = new System.Collections.Generic.List<DriveItem>();
+
+        Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse deltaResponse;
+
+        if (deltaLink == null)
+        {
+            deltaResponse = await _client.Drives[drive.Id].Items["root"].Delta
+                .GetAsDeltaGetResponseAsync(cancellationToken: cancellationToken);
+        }
+        else
+        {
+            deltaResponse = await _client.Drives[drive.Id].Items["root"].Delta
+                .WithUrl(deltaLink)
+                .GetAsDeltaGetResponseAsync(cancellationToken: cancellationToken);
+        }
+
+        var pageIterator = PageIterator<DriveItem, Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse>
+            .CreatePageIterator(_client, deltaResponse, item =>
+            {
+                items.Add(item);
+                return true;
+            });
+
+        await pageIterator.IterateAsync(cancellationToken);
+
+        var newDeltaLink = pageIterator.Deltalink;
+
+        return (items, newDeltaLink);
+    }
+
     public async Task ArchiveAsync(string fileLocation, CancellationToken cancellationToken = default)
     {
         // SharePoint Online doesn't have a direct archive concept like S3

@@ -25,6 +25,8 @@ memoryCache = provider.GetService<IMemoryCache>();
 
 var sharePointOnlineClient = new SharePointOnlineClient(options, memoryCache);
 
+//var subscription = await sharePointOnlineClient.CreateWebhookAsync($"https://ddddotnet-webhook-server.azurewebsites.net/tenants/{options.TenantId}/topics/sharepoint", DateTimeOffset.Now.AddMinutes(43200), "test client state");
+
 var fileLocation = UriPath.Combine(DateTime.Now.ToString("yyyy/MM/dd"), Guid.NewGuid().ToString());
 
 var fileStream = new MemoryStream(Encoding.UTF8.GetBytes("Test"));
@@ -37,3 +39,30 @@ foreach (var permission in permissions)
 {
     Console.WriteLine($"Permission: {permission.Id}, Roles: {string.Join(", ", permission.Roles)}, GrantedTo: {permission.GrantedTo?.User?.DisplayName}");
 }
+
+// Keep calling delta with the returned link until it stops returning new items,
+// i.e. we've caught up to the current state (Microsoft Graph will only send further
+// webhook notifications once we've consumed all pending changes this way).
+string deltaLink = null;
+
+while (true)
+{
+    var (changedItems, newDeltaLink) = await sharePointOnlineClient.GetDeltaAsync(deltaLink);
+
+    foreach (var item in changedItems)
+    {
+        Console.WriteLine($"Changed item: {item.Name} ({item.Id})");
+    }
+
+    if (changedItems.Count == 0)
+    {
+        // Caught up - no more pending changes. Persist newDeltaLink so the next
+        // webhook notification can resume from here.
+        deltaLink = newDeltaLink;
+        break;
+    }
+
+    deltaLink = newDeltaLink;
+}
+
+Console.WriteLine($"DeltaLink: {deltaLink}");
