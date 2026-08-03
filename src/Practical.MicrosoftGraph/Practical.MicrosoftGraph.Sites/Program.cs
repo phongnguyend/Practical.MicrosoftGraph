@@ -49,9 +49,9 @@ while (true)
 {
     var (changedItems, newDeltaLink) = await sharePointOnlineClient.GetDeltaAsync(deltaLink);
 
-    foreach (var item in changedItems)
+    foreach (var change in changedItems)
     {
-        Console.WriteLine($"Changed item: {item.Name} ({item.Id})");
+        Console.WriteLine($"{change.ChangeType} {change.ItemType}: {change.Item.Name} ({change.Item.Id}), ETag: {change.Item.ETag}");
     }
 
     if (changedItems.Count == 0)

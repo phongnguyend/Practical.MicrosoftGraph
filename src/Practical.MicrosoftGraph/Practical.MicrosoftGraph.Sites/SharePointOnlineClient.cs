@@ -3,6 +3,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Drives.Item.Items.Item.Checkin;
 using Microsoft.Graph.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -135,7 +136,7 @@ public class SharePointOnlineClient
         await contentStream.CopyToAsync(stream, cancellationToken);
     }
 
-    public async Task<System.Collections.Generic.List<Permission>> GetPermissionsAsync(string fileLocation, CancellationToken cancellationToken = default)
+    public async Task<List<Permission>> GetPermissionsAsync(string fileLocation, CancellationToken cancellationToken = default)
     {
         var drive = await GetDocumentLibraryAsync(cancellationToken);
         var relativePath = GetRelativePath(fileLocation);
@@ -172,11 +173,11 @@ public class SharePointOnlineClient
     /// Pass null to start a fresh delta from the current state, or pass the deltaLink returned
     /// from a previous call to continue from where you left off.
     /// </summary>
-    public async Task<(System.Collections.Generic.List<DriveItem> Items, string DeltaLink)> GetDeltaAsync(string deltaLink = null, CancellationToken cancellationToken = default)
+    public async Task<(List<DriveItemChange> Items, string DeltaLink)> GetDeltaAsync(string deltaLink = null, CancellationToken cancellationToken = default)
     {
         var drive = await GetDocumentLibraryAsync(cancellationToken);
 
-        var items = new System.Collections.Generic.List<DriveItem>();
+        var items = new List<DriveItemChange>();
 
         Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse deltaResponse;
 
@@ -195,7 +196,7 @@ public class SharePointOnlineClient
         var pageIterator = PageIterator<DriveItem, Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse>
             .CreatePageIterator(_client, deltaResponse, item =>
             {
-                items.Add(item);
+                items.Add(DriveItemChange.Create(item));
                 return true;
             });
 
