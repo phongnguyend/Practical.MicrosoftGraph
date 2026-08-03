@@ -25,7 +25,16 @@ memoryCache = provider.GetService<IMemoryCache>();
 
 var sharePointOnlineClient = new SharePointOnlineClient(options, memoryCache);
 
-//var subscription = await sharePointOnlineClient.CreateWebhookAsync($"https://ddddotnet-webhook-server.azurewebsites.net/tenants/{options.TenantId}/topics/sharepoint", DateTimeOffset.Now.AddMinutes(43200), "test client state");
+//var subscriptions = await sharePointOnlineClient.GetWebhookSubscriptionsAsync();
+
+//foreach (var subscription in subscriptions)
+//{
+//    Console.WriteLine($"Subscription: {subscription.Id}, ExpirationDateTime: {subscription.ExpirationDateTime}, ClientState: {subscription.ClientState}");
+
+//    //await sharePointOnlineClient.DeleteWebhookSubscriptionAsync(subscription.Id);
+//}
+
+//var subscription = await sharePointOnlineClient.CreateWebhookSubscriptionAsync($"https://ddddotnet-webhook-server.azurewebsites.net/tenants/{options.TenantId}/topics/sharepoint", DateTimeOffset.Now.AddMinutes(43200), "test client state");
 
 var fileLocation = UriPath.Combine(DateTime.Now.ToString("yyyy/MM/dd"), Guid.NewGuid().ToString());
 

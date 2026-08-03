@@ -149,7 +149,15 @@ public class SharePointOnlineClient
         return permissions.Value;
     }
 
-    public async Task<Subscription> CreateWebhookAsync(string notificationUrl, DateTimeOffset expirationDateTime, string clientState = null, CancellationToken cancellationToken = default)
+    public async Task<List<Subscription>> GetWebhookSubscriptionsAsync(CancellationToken cancellationToken = default)
+    {
+        var subscriptions = await _client.Subscriptions
+            .GetAsync(cancellationToken: cancellationToken);
+
+        return subscriptions.Value;
+    }
+
+    public async Task<Subscription> CreateWebhookSubscriptionAsync(string notificationUrl, DateTimeOffset expirationDateTime, string clientState = null, CancellationToken cancellationToken = default)
     {
         var drive = await GetDocumentLibraryAsync(cancellationToken);
 
@@ -164,6 +172,23 @@ public class SharePointOnlineClient
 
         return await _client.Subscriptions
             .PostAsync(subscription, cancellationToken: cancellationToken);
+    }
+
+    public async Task<Subscription> UpdateWebhookSubscriptionAsync(string subscriptionId, DateTimeOffset expirationDateTime, CancellationToken cancellationToken = default)
+    {
+        var subscription = new Subscription
+        {
+            ExpirationDateTime = expirationDateTime,
+        };
+
+        return await _client.Subscriptions[subscriptionId]
+            .PatchAsync(subscription, cancellationToken: cancellationToken);
+    }
+
+    public async Task DeleteWebhookSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default)
+    {
+        await _client.Subscriptions[subscriptionId]
+            .DeleteAsync(cancellationToken: cancellationToken);
     }
 
     /// <summary>
