@@ -173,11 +173,11 @@ public class SharePointOnlineClient
     /// Pass null to start a fresh delta from the current state, or pass the deltaLink returned
     /// from a previous call to continue from where you left off.
     /// </summary>
-    public async Task<(List<DriveItemChange> Items, string DeltaLink)> GetDeltaAsync(string deltaLink = null, CancellationToken cancellationToken = default)
+    public async Task<(List<DriveItemEvent> Items, string DeltaLink)> GetDeltaAsync(string deltaLink = null, CancellationToken cancellationToken = default)
     {
         var drive = await GetDocumentLibraryAsync(cancellationToken);
 
-        var items = new List<DriveItemChange>();
+        var items = new List<DriveItemEvent>();
 
         Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse deltaResponse;
 
@@ -196,7 +196,7 @@ public class SharePointOnlineClient
         var pageIterator = PageIterator<DriveItem, Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse>
             .CreatePageIterator(_client, deltaResponse, item =>
             {
-                items.Add(DriveItemChange.Create(item));
+                items.Add(DriveItemEvent.Create(item));
                 return true;
             });
 

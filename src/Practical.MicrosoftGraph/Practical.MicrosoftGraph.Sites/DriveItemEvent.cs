@@ -2,7 +2,7 @@ using Microsoft.Graph.Models;
 
 namespace Practical.MicrosoftGraph.Sites;
 
-public enum DriveItemChangeType
+public enum DriveItemEventType
 {
     Created,
     Updated,
@@ -15,32 +15,32 @@ public enum DriveItemType
     Folder,
 }
 
-public class DriveItemChange
+public class DriveItemEvent
 {
-    public DriveItemChange(DriveItem item, DriveItemChangeType changeType)
+    public DriveItemEvent(DriveItem item, DriveItemEventType eventType)
     {
         Item = item;
-        ChangeType = changeType;
+        EventType = eventType;
     }
 
     public DriveItem Item { get; }
 
-    public DriveItemChangeType ChangeType { get; }
+    public DriveItemEventType EventType { get; }
 
     public DriveItemType ItemType => Item.Folder != null ? DriveItemType.Folder : DriveItemType.File;
 
     public string IdempotencyKey => $"{Item.Id}:{Item.ETag}";
 
-    public static DriveItemChange Create(DriveItem item)
+    public static DriveItemEvent Create(DriveItem item)
     {
-        return new DriveItemChange(item, GetChangeType(item));
+        return new DriveItemEvent(item, GetEventType(item));
     }
 
-    private static DriveItemChangeType GetChangeType(DriveItem item)
+    private static DriveItemEventType GetEventType(DriveItem item)
     {
         if (item.Deleted != null)
         {
-            return DriveItemChangeType.Deleted;
+            return DriveItemEventType.Deleted;
         }
 
         // Graph delta does not explicitly flag created vs updated items, so we infer it by
@@ -48,9 +48,9 @@ public class DriveItemChange
         if (item.CreatedDateTime.HasValue && item.LastModifiedDateTime.HasValue
             && item.CreatedDateTime.Value == item.LastModifiedDateTime.Value)
         {
-            return DriveItemChangeType.Created;
+            return DriveItemEventType.Created;
         }
 
-        return DriveItemChangeType.Updated;
+        return DriveItemEventType.Updated;
     }
 }

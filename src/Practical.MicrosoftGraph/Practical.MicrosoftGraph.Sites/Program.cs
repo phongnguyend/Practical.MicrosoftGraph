@@ -51,7 +51,7 @@ while (true)
 
     foreach (var change in changedItems)
     {
-        Console.WriteLine($"{change.ChangeType} {change.ItemType}: {change.Item.Name} ({change.Item.Id}), ETag: {change.Item.ETag}");
+        Console.WriteLine($"{change.EventType} {change.ItemType}: {change.Item.Name} ({change.Item.Id}), ETag: {change.Item.ETag}");
     }
 
     if (changedItems.Count == 0)
