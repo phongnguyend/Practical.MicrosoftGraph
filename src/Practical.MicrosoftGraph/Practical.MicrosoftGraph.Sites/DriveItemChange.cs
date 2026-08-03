@@ -29,6 +29,8 @@ public class DriveItemChange
 
     public DriveItemType ItemType => Item.Folder != null ? DriveItemType.Folder : DriveItemType.File;
 
+    public string IdempotencyKey => $"{Item.Id}:{Item.ETag}";
+
     public static DriveItemChange Create(DriveItem item)
     {
         return new DriveItemChange(item, GetChangeType(item));
