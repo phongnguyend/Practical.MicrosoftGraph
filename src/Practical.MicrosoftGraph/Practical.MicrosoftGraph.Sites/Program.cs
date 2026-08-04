@@ -25,29 +25,29 @@ memoryCache = provider.GetService<IMemoryCache>();
 
 var sharePointOnlineClient = new SharePointOnlineClient(options, memoryCache);
 
-//var subscriptions = await sharePointOnlineClient.GetWebhookSubscriptionsAsync();
+var subscriptions = await sharePointOnlineClient.GetWebhookSubscriptionsAsync();
 
-//foreach (var subscription in subscriptions)
-//{
-//    Console.WriteLine($"Subscription: {subscription.Id}, ExpirationDateTime: {subscription.ExpirationDateTime}, ClientState: {subscription.ClientState}");
-
-//    //await sharePointOnlineClient.DeleteWebhookSubscriptionAsync(subscription.Id);
-//}
-
-//var subscription = await sharePointOnlineClient.CreateWebhookSubscriptionAsync($"https://ddddotnet-webhook-server.azurewebsites.net/tenants/{options.TenantId}/topics/sharepoint", DateTimeOffset.Now.AddMinutes(43200), "test client state");
-
-var fileLocation = UriPath.Combine(DateTime.Now.ToString("yyyy/MM/dd"), Guid.NewGuid().ToString());
-
-var fileStream = new MemoryStream(Encoding.UTF8.GetBytes("Test"));
-
-await sharePointOnlineClient.CreateAsync(fileLocation, fileStream);
-
-var permissions = await sharePointOnlineClient.GetPermissionsAsync(fileLocation);
-
-foreach (var permission in permissions)
+foreach (var subscription in subscriptions)
 {
-    Console.WriteLine($"Permission: {permission.Id}, Roles: {string.Join(", ", permission.Roles)}, GrantedTo: {permission.GrantedTo?.User?.DisplayName}");
+    Console.WriteLine($"Subscription: {subscription.Id}, ExpirationDateTime: {subscription.ExpirationDateTime}, ClientState: {subscription.ClientState}");
+
+    //await sharePointOnlineClient.DeleteWebhookSubscriptionAsync(subscription.Id);
 }
+
+//var createdSubscription = await sharePointOnlineClient.CreateWebhookSubscriptionAsync($"https://ddddotnet-webhook-server.azurewebsites.net/tenants/{options.TenantId}/topics/sharepoint", DateTimeOffset.Now.AddMinutes(43200), "test client state");
+
+//var fileLocation = UriPath.Combine(DateTime.Now.ToString("yyyy/MM/dd"), Guid.NewGuid().ToString());
+
+//var fileStream = new MemoryStream(Encoding.UTF8.GetBytes("Test"));
+
+//await sharePointOnlineClient.CreateAsync(fileLocation, fileStream);
+
+//var permissions = await sharePointOnlineClient.GetPermissionsAsync(fileLocation);
+
+//foreach (var permission in permissions)
+//{
+//    Console.WriteLine($"Permission: {permission.Id}, Roles: {string.Join(", ", permission.Roles)}, GrantedTo: {permission.GrantedTo?.User?.DisplayName}");
+//}
 
 // Keep calling delta with the returned link until it stops returning new items,
 // i.e. we've caught up to the current state (Microsoft Graph will only send further

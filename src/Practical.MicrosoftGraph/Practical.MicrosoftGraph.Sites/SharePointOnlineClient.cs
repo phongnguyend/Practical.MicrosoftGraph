@@ -171,7 +171,12 @@ public class SharePointOnlineClient
         };
 
         return await _client.Subscriptions
-            .PostAsync(subscription, cancellationToken: cancellationToken);
+            .PostAsync(subscription, requestConfiguration =>
+            {
+                requestConfiguration.Headers.Add(
+                    "Prefer",
+                    "includesecuritywebhooks");
+            }, cancellationToken: cancellationToken);
     }
 
     public async Task<Subscription> UpdateWebhookSubscriptionAsync(string subscriptionId, DateTimeOffset expirationDateTime, CancellationToken cancellationToken = default)
