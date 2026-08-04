@@ -21,6 +21,12 @@ public class DriveItemEvent
     {
         Item = item;
         EventType = eventType;
+
+        if (item.AdditionalData != null && item.AdditionalData.TryGetValue("@microsoft.graph.sharedChanged", out var value)
+            && value is bool sharedChanged && sharedChanged)
+        {
+            SharedChanged = true;
+        }
     }
 
     public DriveItem Item { get; }
@@ -30,6 +36,8 @@ public class DriveItemEvent
     public DriveItemType ItemType => Item.Folder != null ? DriveItemType.Folder : DriveItemType.File;
 
     public string IdempotencyKey => $"{Item.Id}:{Item.ETag}";
+
+    public bool SharedChanged { get; }
 
     public static DriveItemEvent Create(DriveItem item)
     {

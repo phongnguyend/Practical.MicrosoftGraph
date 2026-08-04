@@ -214,13 +214,23 @@ public class SharePointOnlineClient
         if (deltaLink == null)
         {
             deltaResponse = await _client.Drives[drive.Id].Items["root"].Delta
-                .GetAsDeltaGetResponseAsync(cancellationToken: cancellationToken);
+                .GetAsDeltaGetResponseAsync(requestConfiguration =>
+                {
+                    requestConfiguration.Headers.Add(
+                        "Prefer",
+                        "deltashowremovedasdeleted,deltatraversepermissiongaps,deltashowsharingchanges,hierarchicalsharing");
+                }, cancellationToken: cancellationToken);
         }
         else
         {
             deltaResponse = await _client.Drives[drive.Id].Items["root"].Delta
                 .WithUrl(deltaLink)
-                .GetAsDeltaGetResponseAsync(cancellationToken: cancellationToken);
+                .GetAsDeltaGetResponseAsync(requestConfiguration =>
+                {
+                    requestConfiguration.Headers.Add(
+                        "Prefer",
+                        "deltashowremovedasdeleted,deltatraversepermissiongaps,deltashowsharingchanges,hierarchicalsharing");
+                }, cancellationToken: cancellationToken);
         }
 
         var pageIterator = PageIterator<DriveItem, Microsoft.Graph.Drives.Item.Items.Item.Delta.DeltaGetResponse>
